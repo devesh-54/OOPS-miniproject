@@ -1,0 +1,24 @@
+-- Create database
+CREATE DATABASE hotel_staff_dc;
+USE hotel_staff_dc;
+
+-- Create table
+CREATE TABLE staff_schedule (
+    staff_id INT PRIMARY KEY,
+    staff_name VARCHAR(50),
+    role VARCHAR(30),
+    shift_date DATE,
+    shift_start TIME,
+    shift_end TIME
+);
+
+-- Insert sample data
+INSERT INTO staff_schedule VALUES
+(1, 'John', 'Receptionist', '2025-11-08', '08:00:00', '16:00:00'),
+(2, 'Maya', 'Chef', '2025-11-08', '10:00:00', '18:00:00'),
+(3, 'Ravi', 'Cleaner', '2025-11-08', '06:00:00', '14:00:00');
+
+-- Display schedule
+SELECT staff_name, role, shift_date, shift_start, shift_end
+FROM staff_schedule
+ORDER BY shift_date, shift_start;
