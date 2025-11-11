@@ -1,24 +1,122 @@
--- Create database
-CREATE DATABASE hotel_staff_dc;
-USE hotel_staff_dc;
+-- ----------------------------------------------------------
+-- DATABASE : Patient Billing and Pharmacy Management System
+-- ----------------------------------------------------------
 
--- Create table
-CREATE TABLE staff_schedule (
-    staff_id INT PRIMARY KEY,
-    staff_name VARCHAR(50),
-    role VARCHAR(30),
-    shift_date DATE,
-    shift_start TIME,
-    shift_end TIME
+-- 1️⃣ Create Database and Use It
+CREATE DATABASE IF NOT EXISTS hospitaldb;
+USE hospitaldb;
+
+-- ----------------------------------------------------------
+-- 2️⃣ Create Table: patients
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS patients (
+    patient_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    age INT,
+    gender VARCHAR(10),
+    diagnosis VARCHAR(200),
+    contact VARCHAR(15)
 );
 
--- Insert sample data
-INSERT INTO staff_schedule VALUES
-(1, 'John', 'Receptionist', '2025-11-08', '08:00:00', '16:00:00'),
-(2, 'Maya', 'Chef', '2025-11-08', '10:00:00', '18:00:00'),
-(3, 'Ravi', 'Cleaner', '2025-11-08', '06:00:00', '14:00:00');
+-- ----------------------------------------------------------
+-- 3️⃣ Create Table: medicines
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS medicines (
+    medicine_id INT AUTO_INCREMENT PRIMARY KEY,
+    medicine_name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2),
+    stock INT DEFAULT 0
+);
 
--- Display schedule
-SELECT staff_name, role, shift_date, shift_start, shift_end
-FROM staff_schedule
-ORDER BY shift_date, shift_start;
+-- ----------------------------------------------------------
+-- 4️⃣ Create Table: bills
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS bills (
+    bill_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT,
+    total_amount DECIMAL(10,2),
+    bill_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id)
+);
+
+-- ----------------------------------------------------------
+-- 5️⃣ Insert Sample Data into patients
+-- ----------------------------------------------------------
+INSERT INTO patients (name, age, gender, diagnosis, contact)
+VALUES
+('Arun Kumar', 25, 'Male', 'Fever', '9876543210'),
+('Divya Raj', 30, 'Female', 'Headache', '9865321450'),
+('Kavin Raj', 29, 'Male', 'Cold and Cough', '9876543120');
+
+-- ----------------------------------------------------------
+-- 6️⃣ Insert Sample Data into medicines
+-- ----------------------------------------------------------
+INSERT INTO medicines (medicine_name, price, stock)
+VALUES
+('Paracetamol', 25.50, 100),
+('Amoxicillin', 50.00, 60),
+('Cough Syrup', 75.00, 30),
+('Vitamin C Tablets', 90.00, 40);
+
+-- ----------------------------------------------------------
+-- 7️⃣ Insert Sample Data into bills
+-- ----------------------------------------------------------
+INSERT INTO bills (patient_id, total_amount)
+VALUES
+(1, 1500.75),
+(2, 950.50),
+(3, 600.00);
+
+-- ----------------------------------------------------------
+-- 8️⃣ Display All Patients
+-- ----------------------------------------------------------
+SELECT * FROM patients;
+
+-- ----------------------------------------------------------
+-- 9️⃣ Display All Medicines
+-- ----------------------------------------------------------
+SELECT * FROM medicines;
+
+-- ----------------------------------------------------------
+-- 🔟 Display Bill Details with Patient Names
+-- ----------------------------------------------------------
+SELECT b.bill_id, p.name AS patient_name, b.total_amount, b.bill_date
+FROM bills b
+JOIN patients p ON b.patient_id = p.patient_id;
+
+-- ----------------------------------------------------------
+-- 1️⃣1️⃣ Show Total Revenue
+-- ----------------------------------------------------------
+SELECT SUM(total_amount) AS total_revenue FROM bills;
+
+-- ----------------------------------------------------------
+-- 1️⃣2️⃣ Update Medicine Stock (Example)
+-- ----------------------------------------------------------
+UPDATE medicines SET stock = stock - 2 WHERE medicine_id = 1;
+
+-- ----------------------------------------------------------
+-- 1️⃣3️⃣ Update Patient Contact Info (Example)
+-- ----------------------------------------------------------
+UPDATE patients SET contact = '9876500000' WHERE patient_id = 1;
+
+-- ----------------------------------------------------------
+-- 1️⃣4️⃣ Delete a Bill Record (Example)
+-- ----------------------------------------------------------
+DELETE FROM bills WHERE bill_id = 3;
+
+-- ----------------------------------------------------------
+-- 1️⃣5️⃣ Create a View for Patient Billing Summary
+-- ----------------------------------------------------------
+CREATE OR REPLACE VIEW patient_billing_summary AS
+SELECT p.name, p.diagnosis, b.total_amount, b.bill_date
+FROM patients p
+JOIN bills b ON p.patient_id = b.patient_id;
+
+-- ----------------------------------------------------------
+-- 1️⃣6️⃣ Display Summary View
+-- ----------------------------------------------------------
+SELECT * FROM patient_billing_summary;
+
+-- ----------------------------------------------------------
+-- ✅ End of Script
+-- ----------------------------------------------------------
